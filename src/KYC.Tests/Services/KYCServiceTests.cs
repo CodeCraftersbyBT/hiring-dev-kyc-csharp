@@ -13,16 +13,20 @@ public class KYCServiceTests
     }
 
     [Theory]
-    [InlineData("RO", CustomerCategory.AGR, CustomerType.PF, true, 0)]
-    [InlineData("BR", CustomerCategory.Retail, CustomerType.PF, true, 20)]
-    [InlineData("IT", CustomerCategory.Private, CustomerType.PF, false, 50)]
-    [InlineData("IT", CustomerCategory.Private, CustomerType.PJ, true, 50)]
-    [InlineData("RO", CustomerCategory.Private, CustomerType.PF, true, 30)]
-    [InlineData("RO", CustomerCategory.Private, CustomerType.PJ, true, 30)]
+    [InlineData("RO", CustomerCategory.AGR, CustomerType.PF, true, true, 0)]
+    [InlineData("BR", CustomerCategory.Retail, CustomerType.PF,true, true, 40)]
+    [InlineData("BR", CustomerCategory.Retail, CustomerType.PF, false, false, 50)]
+    [InlineData("IT", CustomerCategory.Private, CustomerType.PF,false, false, 80)]
+    [InlineData("IT", CustomerCategory.Private, CustomerType.PJ,true, false, 70)]
+    [InlineData("RO", CustomerCategory.Private, CustomerType.PF, true, true, 30)]
+    [InlineData("RO", CustomerCategory.Private, CustomerType.PF, false, true, 30)]
+    [InlineData("RO", CustomerCategory.Private, CustomerType.PJ, true, true, 30)]
+    [InlineData("RO", CustomerCategory.Private, CustomerType.PJ, false, true, 30)]
     public void WhenCustomerDoesNotHaveReputations_ForGivenCustomerData_ReturnTheExpectedResult(
         string addressCountryCode,
         CustomerCategory category,
         CustomerType type,
+        bool isResident,
         bool expectedAcceptable,
         int expectedRiskScore)
     {
@@ -30,7 +34,8 @@ public class KYCServiceTests
         {
             AddressCountryCode = addressCountryCode,
             Category = category,
-            Type = type
+            Type = type,
+            IsResident = isResident,            
         };
 
         var result = _sut.CheckCustomer(customer);

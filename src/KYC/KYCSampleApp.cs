@@ -8,7 +8,8 @@ var kycService = new KYCService();
 var customer = new Customer
 {
     Identifier = "dfstyj053o4rgwh4yt",
-    AddressCountryCode = "RO",
+    AddressCountryCode = "HU",
+    IsResident = false,
     Category = CustomerCategory.Retail,
     Reputations = new List<Reputation>
     {

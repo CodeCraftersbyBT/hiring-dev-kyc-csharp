@@ -18,6 +18,11 @@ public class KYCService
         if (customer.Category == CustomerCategory.Private)
             riskScore += 30;
 
+        if(customer.IsResident &&  customer.AddressCountryCode != "RO")
+            riskScore += 20;
+        if (!customer.IsResident && customer.AddressCountryCode != "RO")
+            riskScore += 30;
+
         if (customer.Reputations != null && customer.Reputations.Any())
         {
             var modules = new List<string>();
