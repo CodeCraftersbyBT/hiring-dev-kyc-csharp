@@ -34,8 +34,12 @@ public class KYCService
         if (customer.Reputations != null && customer.Reputations.Any())
         {
             var reputations = new List<Reputation>();
+            var RSS_Reputation = 0;
             foreach (var reputation in customer.Reputations)
             {
+                if (reputation.ModuleName.StartsWith("RSS_"))
+                    ++RSS_Reputation;
+
                 var containsReputation = reputations.Any(r => r.ModuleName == reputation.ModuleName 
                                                            && r.MatchRate == reputation.MatchRate);
 
@@ -49,6 +53,8 @@ public class KYCService
             }
             if(reputations.Count > 3)
                 riskScore += 10;
+
+            riskScore += 30 * RSS_Reputation / 3;
         }
 
         result.RiskScore = riskScore;

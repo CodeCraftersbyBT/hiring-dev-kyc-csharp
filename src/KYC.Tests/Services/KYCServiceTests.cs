@@ -197,6 +197,38 @@ public class KYCServiceTests
         Assert.Equal(checkPerformed, result.CheckPerfomred);
     }
 
+    [Theory]
+    [InlineData(1, true, 10)]
+    [InlineData(3, true, 30)]
+    [InlineData(7, false, 70)]
+    public void WhenCustomerHasRSS_Reputations_ReturnExpectedResult(
+        int numerOfRSSReputations,
+        bool expectedAcceptable,
+        int expectedRiskScore)
+    {
+
+
+        var customer = new Customer
+        {
+            AddressCountryCode = "RO",
+            Category = CustomerCategory.Retail,
+            Type = CustomerType.PF,
+            Reputations = new List<Reputation>()
+        };
+
+        for (int i = 0; i < numerOfRSSReputations; i++)
+        {
+            customer.Reputations.Add(
+                new() { ModuleName = "RSS_test" }
+            );
+        }
+
+        var result = _sut.CheckCustomer(customer);
+
+        Assert.Equal(expectedAcceptable, result.Acceptable);
+        Assert.Equal(expectedRiskScore, result.RiskScore);
+    }
+
     public static IEnumerable<object[]> BLReputationScenarios =>
         new List<object[]>
         {
