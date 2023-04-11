@@ -1,4 +1,5 @@
 ﻿using KYC.Models;
+using System.Security.Cryptography.X509Certificates;
 
 namespace KYC.Services;
 
@@ -32,18 +33,21 @@ public class KYCService
 
         if (customer.Reputations != null && customer.Reputations.Any())
         {
-            var modules = new List<string>();
+            var reputations = new List<Reputation>();
             foreach (var reputation in customer.Reputations)
             {
-                if (reputation.ModuleName == "BL" && reputation.MatchRate > 0.4m)
+                var containsReputation = reputations.Any(r => r.ModuleName == reputation.ModuleName 
+                                                           && r.MatchRate == reputation.MatchRate);
+
+                if (reputation.ModuleName == "BL" && reputation.MatchRate > 0.4m && !containsReputation)
                     riskScore += 60;
-                if (reputation.ModuleName == "SI")
+                if (reputation.ModuleName == "SI" && !containsReputation)
                     riskScore += 100;
                 
-                if (!modules.Contains(reputation.ModuleName))
-                    modules.Add(reputation.ModuleName);                
+                if (!containsReputation)
+                    reputations.Add(reputation);                
             }
-            if(modules.Count > 3)
+            if(reputations.Count > 3)
                 riskScore += 10;
         }
 

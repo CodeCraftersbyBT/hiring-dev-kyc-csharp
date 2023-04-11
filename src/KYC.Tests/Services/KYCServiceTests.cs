@@ -69,6 +69,32 @@ public class KYCServiceTests
     }
 
     [Theory]
+    [MemberData(nameof(BLReputationScenarios))]
+    public void WhenCustomerHasMultipleBLReputation_ReturnExpectedResult(
+       decimal matchRate,
+       bool expectedAcceptable,
+       int expectedRiskScore)
+    {
+        var customer = new Customer
+        {
+            AddressCountryCode = "RO",
+            Category = CustomerCategory.Retail,
+            Type = CustomerType.PF,
+            Reputations = new List<Reputation>
+            {
+                new() { ModuleName = "BL", MatchRate = matchRate },
+                new() { ModuleName = "BL", MatchRate = matchRate },
+                new() { ModuleName = "BL", MatchRate = matchRate }
+            }
+        };
+
+        var result = _sut.CheckCustomer(customer);
+
+        Assert.Equal(expectedAcceptable, result.Acceptable);
+        Assert.Equal(expectedRiskScore, result.RiskScore);
+    }
+
+    [Theory]
     [InlineData(CustomerType.PF)]
     [InlineData(CustomerType.PJ)]
     public void WhenCustomerHasSIReputation_ReturnExpectedResult(CustomerType type)
@@ -83,6 +109,32 @@ public class KYCServiceTests
             Type = type,
             Reputations = new List<Reputation>
             {
+                new() { ModuleName = "SI" }
+            }
+        };
+
+        var result = _sut.CheckCustomer(customer);
+
+        Assert.Equal(expectedAcceptable, result.Acceptable);
+        Assert.Equal(expectedRiskScore, result.RiskScore);
+    }
+
+    [Theory]
+    [InlineData(CustomerType.PF)]
+    [InlineData(CustomerType.PJ)]
+    public void WhenCustomerHasMultipleSIReputation_ReturnExpectedResult(CustomerType type)
+    {
+        const bool expectedAcceptable = false;
+        const int expectedRiskScore = 100;
+
+        var customer = new Customer
+        {
+            AddressCountryCode = "RO",
+            Category = CustomerCategory.Retail,
+            Type = type,
+            Reputations = new List<Reputation>
+            {
+                new() { ModuleName = "SI" },
                 new() { ModuleName = "SI" }
             }
         };
