@@ -121,6 +121,30 @@ public class KYCServiceTests
         Assert.Equal(expectedRiskScore, result.RiskScore);
     }
 
+    [Theory]
+    [InlineData("2022-3-10", true)]
+    [InlineData("2023-4-1", false)]
+    public void LastTimeChecked_ReturnExpectedResult(
+        DateTime dateTime,
+        bool checkPerformed)
+    {
+        var customer = new Customer
+        {
+            AddressCountryCode = "RO",
+            Category = CustomerCategory.Retail,
+            Type = CustomerType.PF,
+            Reputations = new List<Reputation>
+            {
+                new() { ModuleName = "SI" }
+            },
+            LastCheck = dateTime
+        };
+
+        var result = _sut.CheckCustomer(customer);
+
+        Assert.Equal(checkPerformed, result.CheckPerfomred);
+    }
+
     public static IEnumerable<object[]> BLReputationScenarios =>
         new List<object[]>
         {

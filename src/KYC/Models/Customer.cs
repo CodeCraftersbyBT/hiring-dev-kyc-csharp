@@ -8,4 +8,5 @@ public class Customer
     public string AddressCountryCode { get; set; } = null!;
     public bool IsResident { get; set; }
     public IList<Reputation>? Reputations { get; set; }
+    public DateTime LastCheck { get; set; }
 }

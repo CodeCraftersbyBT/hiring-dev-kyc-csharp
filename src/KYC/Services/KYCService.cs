@@ -8,8 +8,15 @@ public class KYCService
     {
         var result = new KYCCheckResult
         {
-            CustomerId = customer.Identifier
-        };
+            CustomerId = customer.Identifier,
+            CheckPerfomred = true
+       };
+
+        if (customer.LastCheck > DateTime.Today.AddMonths(-3))
+        {
+            result.CheckPerfomred = false;
+            return result;
+        }
 
         var riskScore = 0;
 
