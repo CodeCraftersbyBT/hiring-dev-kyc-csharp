@@ -88,6 +88,34 @@ public class KYCServiceTests
         Assert.Equal(expectedRiskScore, result.RiskScore);
     }
 
+    [Theory]
+    [InlineData(CustomerType.PF)]
+    [InlineData(CustomerType.PJ)]
+    public void WhenCustomerHasMoreThanThreDiffrenetModules_ReturnExpectedResult(CustomerType type)
+    {
+        const bool expectedAcceptable = false;
+        const int expectedRiskScore = 110;
+
+        var customer = new Customer
+        {
+            AddressCountryCode = "RO",
+            Category = CustomerCategory.Retail,
+            Type = type,
+            Reputations = new List<Reputation>
+            {
+                new() { ModuleName = "SI" },
+                new() { ModuleName = "MS" },
+                new() { ModuleName = "TS" },
+                new() { ModuleName = "BZ" }
+            }
+        };
+
+        var result = _sut.CheckCustomer(customer);
+
+        Assert.Equal(expectedAcceptable, result.Acceptable);
+        Assert.Equal(expectedRiskScore, result.RiskScore);
+    }
+
     public static IEnumerable<object[]> BLReputationScenarios =>
         new List<object[]>
         {

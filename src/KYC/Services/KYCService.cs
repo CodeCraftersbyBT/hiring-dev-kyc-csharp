@@ -20,13 +20,19 @@ public class KYCService
 
         if (customer.Reputations != null && customer.Reputations.Any())
         {
+            var modules = new List<string>();
             foreach (var reputation in customer.Reputations)
             {
                 if (reputation.ModuleName == "BL" && reputation.MatchRate > 0.4m)
                     riskScore += 60;
                 if (reputation.ModuleName == "SI")
                     riskScore += 100;
+                
+                if (!modules.Contains(reputation.ModuleName))
+                    modules.Add(reputation.ModuleName);                
             }
+            if(modules.Count > 3)
+                riskScore += 10;
         }
 
         result.RiskScore = riskScore;
